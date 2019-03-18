@@ -3,10 +3,13 @@ import os
 import shutil
 import time
 from argparse import ArgumentParser
+from pathlib import Path
+import sys
 
 from audio_reader import AudioReader
 from constants import c
 from utils import InputsGenerator
+from unseen_speakers import inference_unseen_speakers, inference_embeddings
 
 
 def arg_parse():
@@ -78,6 +81,30 @@ def main():
         exit(1)
 
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    main()
+# if __name__ == '__main__':
+#     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+#     main()
+
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+
+#VCTK_PATH = Path('data/VCTK-Corpus/')
+#assert VCTK_PATH.exists()
+#input_audio_dir = VCTK_PATH.joinpath('wav16', 'p225')
+input_audio_dir = Path('samples/PhilippeRemy/')
+assert input_audio_dir.exists()
+cache_dir = Path('cache')
+
+audio_reader = AudioReader(input_audio_dir=input_audio_dir,
+                           output_cache_dir=cache_dir,
+                           sample_rate=c.AUDIO.SAMPLE_RATE,
+                           multi_threading=True)
+audio_reader.build_cache()
+
+unseen_speakers = ['p225', 'PhilippeRemy']
+
+inference_unseen_speakers(audio_reader, 'PhilippeRemy', 'PhilippeRemy')
+
+speaker_id = 'p225'
+inference_embeddings(audio_reader, speaker_id)
