@@ -16,7 +16,7 @@ SPEAKER_ID = 'speaker_id'
 FILENAME = 'filename'
 
 
-def find_files(directory, pattern='**/*.wav'):
+def find_files(directory, pattern='/**/*.wav'):
     """Recursively finds all files matching the pattern."""
     return sorted(glob(directory + pattern, recursive=True))
 
